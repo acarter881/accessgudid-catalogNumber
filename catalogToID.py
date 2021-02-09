@@ -13,15 +13,37 @@ dev_IDs = []
 # Start reading from the first line of the text file
 catalog_numPos = 0 
 
+def companyNames():
+    # Loop through the search results to find all of the Company Names
+    for g in yo:
+        try:
+            if g.find('label', class_='device-attribute').text == 'Company Name:':
+                howdy = g.text.strip().split('\n')[1].strip()
+                choop.append(howdy)
+        except AttributeError:
+            pass
+
+def deviceNumbers():
+    # Create a counter variable for the position of the Company Name
+    yurp = 0
+    # Loop over each <a> tag and append each device number to the dev_IDs list
+    for a in a_tags:
+        try:
+            if not (a.get('href')).startswith('#'):
+                dev_IDs.append((CAT_NUMBER, a.get('href').strip('/devices/'), choop[yurp]))
+                yurp += 1   
+        except IndexError:
+            pass
+
 for i in range(len(lines)):
+    # The current catalog number being searched
+    CAT_NUMBER = lines[catalog_numPos].strip()
+
     # Base URL for the search query
     URL = 'https://accessgudid.nlm.nih.gov/devices/search?query='
 
     # Append the catalog number to the base URL to form the completed URL
-    URL += lines[catalog_numPos].strip()
-
-    # The current catalog number being searched
-    CAT_NUMBER = lines[catalog_numPos].strip()
+    URL += CAT_NUMBER
 
     # Increment catalog_numPos, so the script goes to the next catalog number on its next iteration
     catalog_numPos += 1
@@ -39,22 +61,26 @@ for i in range(len(lines)):
     # Find the search results section of the webpage
     searchResults = soup.find(id='search-results-column')
 
+    # Create an empty list for the Company Names
+    choop = []
+
+    # Create a variable for the main section of the webpage
+    yo = searchResults.find_all('div', class_='xsmall-12 medium-6 columns')
+
+    # Call the companyNames function
+    companyNames()
+
     # Find all of the <a> tags within the search results section of the webpage
     a_tags = searchResults.find_all('a')
 
-    # Loop over each <a> tag and append each device number to the dev_IDs list
-    for a in a_tags:
-        if not (a.get('href')).startswith('#'):
-            dev_IDs.append((CAT_NUMBER, a.get('href').strip('/devices/')))
+    # Call the deviceNumbers function
+    deviceNumbers()
 
-# Remove duplicate device identifiers and maintain the ordering 
-dev_IDs = [i for n, i in enumerate(dev_IDs) if i not in dev_IDs[:n]]
-
-# Create pandas data frame    
-df = pd.DataFrame(dev_IDs, columns=['Catalog Number', 'Device Identifier'])
+# Create pandas data frame
+df = pd.DataFrame(data=dev_IDs, columns=['Catalog Number', 'Device Identifier', 'Company Name'])
 
 # Write relevant data to an Excel file
-df.to_excel('output.xlsx', index=False, freeze_panes=(1,0))
+df.to_excel(excel_writer='Output.xlsx', sheet_name='Medical Devices', index=False, freeze_panes=(1,0))
 
 # Close the text file
 catalog_nums.close()
