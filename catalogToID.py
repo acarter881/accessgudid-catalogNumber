@@ -66,9 +66,12 @@ for i in range(len(lines)):
 
     # Create a variable for the main section of the webpage
     yo = searchResults.find_all('div', class_='xsmall-12 medium-6 columns')
-
-    # Call the companyNames function
-    companyNames()
+    
+    # If the find_all method returns an empty list, append to dev_IDs. Otherwise, call the companyNames function
+    if yo == []:
+        dev_IDs.append((CAT_NUMBER, 'Not Found', 'Not Found'))
+    else:
+        companyNames()
 
     # Find all of the <a> tags within the search results section of the webpage
     a_tags = searchResults.find_all('a')
