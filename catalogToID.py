@@ -68,7 +68,7 @@ for i in range(len(lines)):
     yo = searchResults.find_all('div', class_='xsmall-12 medium-6 columns')
     
     # If the find_all method returns an empty list, append to dev_IDs. Otherwise, call the companyNames function
-    if yo == []:
+    if yo == [] or soup.find_all('span', class_='spelling-correction'):
         dev_IDs.append((CAT_NUMBER, 'Not Found', 'Not Found'))
     else:
         companyNames()
