@@ -14,7 +14,7 @@ dev_IDs = []
 catalog_numPos = 0 
 
 def companyNames():
-    # Loop through the search results to find all of the Company Names
+    # Loop through the search results to find all of the Company Names; take only the ones that have the specific company name in the text
     for g in yo:
         try:
             if g.find('label', class_='device-attribute').text == 'Company Name:' and 'TYPE YOUR COMPANY NAME HERE' in g.text:
